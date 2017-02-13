@@ -1,48 +1,15 @@
 <?php
+
+include 'injprev.php';
+
 $mysql_username = "root";
 $mysql_password = "";
 
 $con = mysqli_connect('localhost', $mysql_username, $mysql_password) or die("Unable to connect to mysql.");
 mysqli_select_db($con,'cse545') or die("Unable to select database cse545");
+$conn= array("localhost","cse545","root","");
 
-function pwi()
-{
-	$ar = array(":a", ":b", ":c", ":d");
-    $numargs = func_num_args();
-    
-    $arg_list = func_get_args();
-	
 
-	$query_a=explode("%s",$arg_list[0]);
-	$s="";
-	$j=0;
-	$c=count($query_a);
-
-    for ($i = 0; $i < $numargs; $i++) {
-         $s=$s.$query_a[$i] ;
-	if($i < ($c-1))
-	{
-
-	$s=$s.$ar[$j];
-	$j++;
-	
-	}
-		
-    }
-	
-	$p = new PDO('mysql:host=localhost;dbname=CSE545', "root", "");
-$st = $p->prepare($s);
-
-for($i = 0;$i < ($numargs-1) ;$i++)
-	{
-		$st->bindParam($ar[$i],$arg_list[$i+1]);
-		
-	}
-	
-	$st->execute();
-	$res = $st->fetch(PDO::FETCH_OBJ);
-	 return $res;
-}
 
 
 if (isset($_POST['submitfile']))
@@ -64,12 +31,12 @@ else if (isset($_POST['submitaccess']))
 	echo "${_POST['name']}";
 	echo "${_POST['password']}";
 
-   $res = mysqli_query($con,"select content from files where name = '${_POST['name']}' and password = '${_POST['password']}'") or die(mysqli_error());
-   if ($row = mysqli_fetch_array($res))
+  $re=pwi($conn,"select content from files where name = %s and password = %s","${_POST['name']}","${_POST['password']}");
+	  print_r($re);
+   if ($re)
    {
 	   
-	  $re=pwi("select content from files where name = %s and password = %s","${_POST['name']}","${_POST['password']}");
-	  echo $re->content;
+	  
 	  exit;
    }
    else
